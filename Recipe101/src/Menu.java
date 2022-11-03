@@ -91,20 +91,20 @@ public class Menu {
 				n_receta.imprimir();
 				break;	
 			case "2":
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas();
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas();
 				
 				String drop = pedir_valor("Id de la receta que se eliminara");
 				Controlador.Controlador_recetas.delete_receta(drop);
 
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas();
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas();
 				System.out.println("Receta eliminada");
 				break;
 			case "3":
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas();
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas();
 				
 				break;
 			case "4":
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas();
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas();
 				
 				String recetea = pedir_valor("Id de la receta para mostrar pasos");
 				Controlador.Controlador_recetas.pasos_receta(recetea);
@@ -114,7 +114,7 @@ public class Menu {
 			case "5":
 				String n_ingr = pedir_valor("Nombre del ingrediente");
 				
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas_c_ingrdiente(n_ingr);
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas_c_ingrdiente(n_ingr);
 				break;
 			case "6":
 				System.out.println("Regresando al menu principal ...");
@@ -137,15 +137,15 @@ public class Menu {
 			String key = sn.nextLine();
 			switch (key) {
 			case "1":
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas();
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas();
 				break;
 			case "2":
 				String n_ingr = pedir_valor("Nombre del ingrediente");
 				
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas_c_ingrdiente(n_ingr);
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas_c_ingrdiente(n_ingr);
 				break;
 			case "3":
-				Controlador.Controlador_recetas.get_recetas().imprimir_recetas();
+				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas();
 				
 				String recetea = pedir_valor("Id de la receta para mostrar pasos");
 				Controlador.Controlador_recetas.pasos_receta(recetea);
