@@ -51,12 +51,24 @@ CREATE TABLE ingrediente(
     id_receta				INT
 );
 
+-- Tabla: receta
+-- Descripcion: Contiene el registro de todas las recetas
 CREATE TABLE receta(
 	id_receta		INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre_receta	VARCHAR(100),
     pasos	VARCHAR(100)
 );
 
+-- Tabla: tags
+-- Descripcion: Contiene el registro de todas los tags
+CREATE TABLE tags(
+    id_tag          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre_tag      VARCHAR(100),
+    id_receta	    INT
+);
+
+-- Tabla: users
+-- Descripcion: Contiene a los usuarios del sistema asi como sus credenciales para ingresar
 DROP TABLE IF EXISTS users;
 CREATE TABLE users(
 	id_user			INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -68,6 +80,8 @@ CREATE TABLE users(
 
 ## Query's
 ```sql
+-- Procedimiento almacenado: add_receta
+-- Descripcion: Agrega nuevas recetas con los datos recibidos como parsmentros
 DROP PROCEDURE IF EXISTS add_receta;
 DELIMITER //
 CREATE PROCEDURE add_receta
@@ -79,7 +93,10 @@ CREATE PROCEDURE add_receta
     IN ccantidad_ingrediente2	VARCHAR(100),
 	IN cnombre_ingrediente3   	VARCHAR(100),
     IN ccantidad_ingrediente3	VARCHAR(100),
-    IN cpasos	VARCHAR(100)
+    IN cpasos	                VARCHAR(100),
+    IN ctag1                    VARCHAR(100),
+    IN ctag2                    VARCHAR(100),
+    IN ctag3                    VARCHAR(100)
 )
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -98,9 +115,17 @@ END;
 	(cnombre_ingrediente2, ccantidad_ingrediente2, @id_ultima_receta),
 	(cnombre_ingrediente3, ccantidad_ingrediente3, @id_ultima_receta);
 
+    INSERT INTO tags(nombre_tag,id_receta)
+    VALUES
+    (ctag1,@id_ultima_receta),
+    (ctag2,@id_ultima_receta),
+    (ctag3,@id_ultima_receta);
+
 END //
 DELIMITER ;
 
+-- Procedimiento almacenado: get_recetas
+-- Descripcion: Retorna todas las recetas almacenadas 
 DROP PROCEDURE IF EXISTS get_recetas;
 DELIMITER //
 CREATE PROCEDURE get_recetas()
@@ -120,7 +145,27 @@ END;
 END //
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS get_recetas_tag;
+DELIMITER //
+CREATE PROCEDURE get_recetas_tag()
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+    ROLLBACK;
+    SHOW ERRORS;
+END;
+	SELECT 
+	t.id_tag,
+    t.nombre_tag,
+    (SELECT nombre_receta FROM receta r WHERE r.id_receta = t.id_receta) as nombreReceta,
+    (SELECT id_receta FROM receta r WHERE r.id_receta = t.id_receta) as id_receta,
+    (Select pasos FROM receta r WHERE r.id_receta = t.id_receta) as pasos
+	FROM tags t;
+END //
+DELIMITER ;
 
+-- Procedimiento almacenado: get_recetas_pasos
+-- Descripcion: Retorna todas las recetas almacenadas con sus pasos
 DROP PROCEDURE IF EXISTS get_recetas_pasos;
 DELIMITER //
 CREATE PROCEDURE get_recetas_pasos()
@@ -142,6 +187,8 @@ END //
 DELIMITER ;
 
 
+-- Procedimiento almacenado: get_receta
+-- Descripcion: Retorna la informacion de una ureceta segun su identificador enviado com parametro 
 DROP PROCEDURE IF EXISTS get_receta;
 DELIMITER //
 CREATE PROCEDURE get_receta(
@@ -164,6 +211,8 @@ END;
 END //
 DELIMITER ;
 
+-- Procedimiento almacenado: get_users
+-- Descripcion: Retorna la informacion de todos los usuarios registrados en el sistema
 DROP PROCEDURE IF EXISTS get_users;
 DELIMITER //
 CREATE PROCEDURE get_users(
@@ -179,7 +228,9 @@ END;
 END //
 DELIMITER ;
 
--- ro 0=administrador, 1 = visitante
+-- Procedimiento almacenado: create_users
+-- Descripcion: agrega nuevos usuarios al sistema
+-- donde rol 0=administrador, 1 = visitante
 DROP PROCEDURE IF EXISTS create_users;
 DELIMITER //
 CREATE PROCEDURE create_users(
@@ -197,6 +248,9 @@ END;
 END //
 DELIMITER ;
 
+
+-- Procedimiento almacenado: verf_users
+-- Descripcion: Determina si existe un usuario que coincida con las credenciales enviadas como parametro
 DROP PROCEDURE IF EXISTS verf_users;
 DELIMITER //
 CREATE PROCEDURE verf_users(
@@ -213,6 +267,8 @@ END;
 END //
 DELIMITER ;
 
+-- Procedimiento almacenado: obt_rol_users
+-- Descripcion: Retorna el rol de usuario segun sus credenciales
 DROP PROCEDURE IF EXISTS obt_rol_users;
 DELIMITER //
 CREATE PROCEDURE obt_rol_users(
@@ -229,6 +285,8 @@ END;
 END //
 DELIMITER ;
 
+-- Procedimiento almacenado: drop_receta
+-- Descripcion: Elimina la receta que coincida con el identificador enviado como parametro
 DROP PROCEDURE IF EXISTS drop_receta;
 DELIMITER //
 CREATE PROCEDURE drop_receta(
@@ -245,5 +303,4 @@ END;
     DELETE FROM ingrediente WHERE id_receta = id_drop;
 END //
 DELIMITER ;
-
 ```
