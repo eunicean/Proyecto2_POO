@@ -1,20 +1,19 @@
-/**
-* Universidad del Valle de Guatemala
-* Facultad de Ingenieria
-* Programacion orientada a objetos
-* Prof. Lynette Garcia Perez
-* Seccion 100
-* Autor: Fernando Mendoza 
+/*
+*Universidad del Valle de Guatemala
+*Facultad de Ingenieria
+*Programacion orientada a objetos
+*Prof. Lynette Garcia Perez
+*Seccion 100
+*Autor: Fernando Mendoza 
 */
 
--- Creación de la base de datos platillos
+-- Creacion de la base de datos platillos
 DROP DATABASE IF EXISTS platillos;
 CREATE DATABASE platillos;
 USE platillos;
 
-
 -- Tabla: ingredientes
--- Descripción: Almacena el detalle de información de cada ingrediente
+-- Descripcion: Almacena el detalle de informacion de cada ingrediente
 CREATE TABLE ingrediente(
 	id_ingrediente			INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre_ingrediente		VARCHAR(100),
@@ -23,25 +22,25 @@ CREATE TABLE ingrediente(
 );
 
 -- Tabla: receta
--- Descripción: Contiene el registro de todas las recetas
+-- Descripcion: Contiene el registro de todas las recetas
 CREATE TABLE receta(
 	id_receta		INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    nombre_receta	VARCHAR(100)
+    nombre_receta	VARCHAR(100),
+    pasos	VARCHAR(100)
 );
 
-
 -- Tabla: users
--- Descripción: Contiene a los usuarios del sistema así como sus credenciales para ingresar
+-- Descripcion: Contiene a los usuarios del sistema asi como sus credenciales para ingresar
 DROP TABLE IF EXISTS users;
 CREATE TABLE users(
 	id_user			INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre_user		VARCHAR(100),
     contr			VARCHAR(100),
-    rol				INT
+    rol				INT default 0
 );
 
 -- Procedimiento almacenado: add_receta
--- Descripción: Agrega nuevas recetas con los datos recibidos como parámentros
+-- Descripcion: Agrega nuevas recetas con los datos recibidos como parsmentros
 DROP PROCEDURE IF EXISTS add_receta;
 DELIMITER //
 CREATE PROCEDURE add_receta
@@ -52,7 +51,8 @@ CREATE PROCEDURE add_receta
 	IN cnombre_ingrediente2   	VARCHAR(100),
     IN ccantidad_ingrediente2	VARCHAR(100),
 	IN cnombre_ingrediente3   	VARCHAR(100),
-    IN ccantidad_ingrediente3	VARCHAR(100)
+    IN ccantidad_ingrediente3	VARCHAR(100),
+    IN cpasos	VARCHAR(100)
 )
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -61,7 +61,7 @@ BEGIN
     SHOW ERRORS;
 END;
 	
-	INSERT INTO receta(nombre_receta) VALUES (cnombre_receta);
+	INSERT INTO receta(nombre_receta, pasos) VALUES (cnombre_receta, cpasos);
     
     SET @id_ultima_receta = LAST_INSERT_ID();
     
@@ -75,7 +75,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento almacenado: get_recetas
--- Descripción: Retorna todas las recetas almacenadas 
+-- Descripcion: Retorna todas las recetas almacenadas 
 DROP PROCEDURE IF EXISTS get_recetas;
 DELIMITER //
 CREATE PROCEDURE get_recetas()
@@ -96,7 +96,29 @@ END //
 DELIMITER ;
 
 -- Procedimiento almacenado: get_receta
--- Descripción: Retorna la información de una ureceta según su identificador enviado com parámetro 
+-- Descripcion: Retorna la informacion de una ureceta segun su identificador enviado com parametro 
+DROP PROCEDURE IF EXISTS get_recetas_pasos;
+DELIMITER //
+CREATE PROCEDURE get_recetas_pasos()
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+    ROLLBACK;
+    SHOW ERRORS;
+END;
+	SELECT 
+	i.id_ingrediente,
+    i.cantidad_ingrediente,
+    i.nombre_ingrediente,
+    (SELECT nombre_receta FROM receta r WHERE r.id_receta = i.id_receta) as nombreReceta,
+    (SELECT id_receta FROM receta r WHERE r.id_receta = i.id_receta) as id_receta,
+    (Select pasos FROM receta r WHERE r.id_receta = i.id_receta) as pasos
+	FROM ingrediente i;
+END //
+DELIMITER ;
+
+-- Procedimiento almacenado: get_users
+-- Descripcion: Retorna la informacion de todos los usuarios registrados en el sistema
 DROP PROCEDURE IF EXISTS get_receta;
 DELIMITER //
 CREATE PROCEDURE get_receta(
@@ -119,8 +141,6 @@ END;
 END //
 DELIMITER ;
 
--- Procedimiento almacenado: get_users
--- Descripción: Retorna la información de todos los usuarios registrados en el sistema
 DROP PROCEDURE IF EXISTS get_users;
 DELIMITER //
 CREATE PROCEDURE get_users(
@@ -137,7 +157,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento almacenado: create_users
--- Descripción: agrega nuevos usuarios al sistema
+-- Descripcion: agrega nuevos usuarios al sistema
 -- donde rol 0=administrador, 1 = visitante
 DROP PROCEDURE IF EXISTS create_users;
 DELIMITER //
@@ -156,8 +176,9 @@ END;
 END //
 DELIMITER ;
 
+
 -- Procedimiento almacenado: verf_users
--- Descripción: Determina si existe un usuario que coincida con las credenciales enviadas como parámetro
+-- Descripcion: Determina si existe un usuario que coincida con las credenciales enviadas como parametro
 DROP PROCEDURE IF EXISTS verf_users;
 DELIMITER //
 CREATE PROCEDURE verf_users(
@@ -175,7 +196,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento almacenado: obt_rol_users
--- Descripción: Retorna el rol de usuario según sus credenciales
+-- Descripcion: Retorna el rol de usuario segun sus credenciales
 DROP PROCEDURE IF EXISTS obt_rol_users;
 DELIMITER //
 CREATE PROCEDURE obt_rol_users(
@@ -193,7 +214,7 @@ END //
 DELIMITER ;
 
 -- Procedimiento almacenado: drop_receta
--- Descripción: Elimina la receta que coincida con el identificador enviado como parámetro
+-- Descripcion: Elimina la receta que coincida con el identificador enviado como parametro
 DROP PROCEDURE IF EXISTS drop_receta;
 DELIMITER //
 CREATE PROCEDURE drop_receta(
@@ -211,16 +232,18 @@ END;
 END //
 DELIMITER ;
 
+
+
 -- Carga de datos iniciales para recetas
 CALL add_receta(
 'TORTILLA DE PATATA RELLENA DE QUESO Y JAMON',
 'Patata Mediana', '3 unidades',
 'Huevos', '5 unidades', 
-'Cebolla', '1/2 unidad'
+'Cebolla', '1/2 unidad',
+'agregar cebolla, batir huevos y freir'
 );
 
--- Carga de datos iniciales para recetas
-CALL add_receta('PALITOS DE QUESO', 'Queso Blando', '500 gramos', '', '', '', '');
+CALL add_receta('PALITOS DE QUESO', 'Queso Blando', '500 gramos', '', '', '', '', 'fundir queaso');
 
 CALL get_recetas();
 
@@ -231,6 +254,7 @@ CALL get_users();
 SELECT * FROM receta where nombre_receta LIKE '%Tortilla%';
 SELECT * FROM receta;
 
+-- Carga de datos iniciales para usuarios
 INSERT INTO users(nombre_user,contr) VALUES ("test1","123"), ("test2", "456");
 
 
