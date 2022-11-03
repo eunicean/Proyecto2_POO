@@ -38,6 +38,19 @@ public class Lista_recetas {
 		}
 		
 	}
+	
+	public void imprimir_recetas_c_tags(String n_t) {
+		for (Receta receta : Listad_recetas) {
+			receta.imprimir_c_tag(n_t);;
+		}
+		
+	}
+	
+	public void imprimir_recetas_c_nombre(String rnmb) {
+		for (Receta receta : Listad_recetas) {
+			receta.nombreparecido(rnmb);
+		}
+	}
 	//
 	public void imprimir_recetas_pasos() {
 		for (Receta receta : Listad_recetas) {

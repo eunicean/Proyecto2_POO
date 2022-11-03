@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import modelos.Ingredientes;
 import modelos.Lista_recetas;
 import modelos.Receta;
+import modelos.tags;
 
 public class Controlador_recetas {
 
@@ -16,10 +17,33 @@ public class Controlador_recetas {
 			String query = "CALL get_recetas()";
 			ArrayList<ArrayList<String>> rs = Conec.consulta(query,5); //se envia el query a la base de datos
 			for (ArrayList<String> arrayList : rs) {
-
 				Lista_recetas.agregar_recetas(new Receta(arrayList.get(3),arrayList.get(4)));
 			}
 			for (ArrayList<String> arrayList : rs) {
+				Receta receta_temp =Lista_recetas.obtener_recetas(arrayList.get(3));
+				receta_temp.add_ingrediente(new Ingredientes(arrayList.get(2),arrayList.get(1)));
+			}
+			return Lista_recetas;
+		}catch(Exception e){ System.out.println(e); return null;}
+	}
+	//------------------------------------------------------------------------------------------------------------
+	public static Lista_recetas get_recetas_tag() { //listado de recetas con tags
+		Lista_recetas Lista_recetas = new Lista_recetas();
+		
+		try {
+			String query = "CALL get_recetas_tag()";
+			ArrayList<ArrayList<String>> rs = Conec.consulta(query,5); //se envia el query a la base de datos
+			for (ArrayList<String> arrayList : rs) {
+				Lista_recetas.agregar_recetas(new Receta(arrayList.get(2),arrayList.get(3),arrayList.get(4)));
+			}
+			for (ArrayList<String> arrayList : rs) {
+				Receta receta_temp =Lista_recetas.obtener_recetas(arrayList.get(2));
+				receta_temp.add_tag(new tags(arrayList.get(1)));
+			}
+			
+			String query2 = "CALL get_recetas()";
+			ArrayList<ArrayList<String>> rs2 = Conec.consulta(query2,5); //se envia el query a la base de datos
+			for (ArrayList<String> arrayList : rs2) {
 				Receta receta_temp =Lista_recetas.obtener_recetas(arrayList.get(3));
 				receta_temp.add_ingrediente(new Ingredientes(arrayList.get(2),arrayList.get(1)));
 			}

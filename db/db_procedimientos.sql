@@ -4,7 +4,7 @@
 *Programacion orientada a objetos
 *Prof. Lynette Garcia Perez
 *Seccion 100
-*Autor: Fernando Mendoza 
+*Autor: Fernando Mendoza, Eunice Mata
 */
 
 -- Creacion de la base de datos platillos
@@ -27,6 +27,14 @@ CREATE TABLE receta(
 	id_receta		INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre_receta	VARCHAR(100),
     pasos	VARCHAR(100)
+);
+
+-- Tabla: tags
+-- Descripcion: Contiene el registro de todas los tags
+CREATE TABLE tags(
+    id_tag          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nombre_tag      VARCHAR(100),
+    id_receta	    INT
 );
 
 -- Tabla: users
@@ -52,7 +60,10 @@ CREATE PROCEDURE add_receta
     IN ccantidad_ingrediente2	VARCHAR(100),
 	IN cnombre_ingrediente3   	VARCHAR(100),
     IN ccantidad_ingrediente3	VARCHAR(100),
-    IN cpasos	VARCHAR(100)
+    IN cpasos	                VARCHAR(100),
+    IN ctag1                    VARCHAR(100),
+    IN ctag2                    VARCHAR(100),
+    IN ctag3                    VARCHAR(100)
 )
 BEGIN
 DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -70,6 +81,12 @@ END;
 	(cnombre_ingrediente1, ccantidad_ingrediente1, @id_ultima_receta),
 	(cnombre_ingrediente2, ccantidad_ingrediente2, @id_ultima_receta),
 	(cnombre_ingrediente3, ccantidad_ingrediente3, @id_ultima_receta);
+
+    INSERT INTO tags(nombre_tag,id_receta)
+    VALUES
+    (ctag1,@id_ultima_receta),
+    (ctag2,@id_ultima_receta),
+    (ctag3,@id_ultima_receta);
 
 END //
 DELIMITER ;
@@ -95,8 +112,27 @@ END;
 END //
 DELIMITER ;
 
--- Procedimiento almacenado: get_receta
--- Descripcion: Retorna la informacion de una ureceta segun su identificador enviado com parametro 
+DROP PROCEDURE IF EXISTS get_recetas_tag;
+DELIMITER //
+CREATE PROCEDURE get_recetas_tag()
+BEGIN
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+BEGIN
+    ROLLBACK;
+    SHOW ERRORS;
+END;
+	SELECT 
+	t.id_tag,
+    t.nombre_tag,
+    (SELECT nombre_receta FROM receta r WHERE r.id_receta = t.id_receta) as nombreReceta,
+    (SELECT id_receta FROM receta r WHERE r.id_receta = t.id_receta) as id_receta,
+    (Select pasos FROM receta r WHERE r.id_receta = t.id_receta) as pasos
+	FROM tags t;
+END //
+DELIMITER ;
+
+-- Procedimiento almacenado: get_recetas_pasos
+-- Descripcion: Retorna todas las recetas almacenadas con sus pasos
 DROP PROCEDURE IF EXISTS get_recetas_pasos;
 DELIMITER //
 CREATE PROCEDURE get_recetas_pasos()
@@ -117,8 +153,9 @@ END;
 END //
 DELIMITER ;
 
--- Procedimiento almacenado: get_users
--- Descripcion: Retorna la informacion de todos los usuarios registrados en el sistema
+
+-- Procedimiento almacenado: get_receta
+-- Descripcion: Retorna la informacion de una ureceta segun su identificador enviado com parametro 
 DROP PROCEDURE IF EXISTS get_receta;
 DELIMITER //
 CREATE PROCEDURE get_receta(
@@ -141,6 +178,8 @@ END;
 END //
 DELIMITER ;
 
+-- Procedimiento almacenado: get_users
+-- Descripcion: Retorna la informacion de todos los usuarios registrados en el sistema
 DROP PROCEDURE IF EXISTS get_users;
 DELIMITER //
 CREATE PROCEDURE get_users(
@@ -240,10 +279,13 @@ CALL add_receta(
 'Patata Mediana', '3 unidades',
 'Huevos', '5 unidades', 
 'Cebolla', '1/2 unidad',
-'agregar cebolla, batir huevos y freir'
+'agregar cebolla, batir huevos y freir',
+'desayuno',
+'carbohidratos',
+''
 );
 
-CALL add_receta('PALITOS DE QUESO', 'Queso Blando', '500 gramos', '', '', '', '', 'fundir queaso');
+CALL add_receta('PALITOS DE QUESO', 'Queso Blando', '500 gramos', '', '', '', '', 'fundir queaso','','','');
 
 CALL get_recetas();
 
