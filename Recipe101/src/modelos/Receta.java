@@ -113,7 +113,6 @@ public class Receta {
 		}
 	}
 	public void imprimir_c_tag(String nombre_tag) {
-		System.out.println(tienetag(nombre_tag));
 		if(tienetag(nombre_tag)) {
 			this.imprimir();
 		}

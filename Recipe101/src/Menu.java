@@ -15,7 +15,7 @@ public class Menu {
 			System.out.println("2) Registrarse");
 			System.out.println("3) Salir");
 			String key = sn.nextLine();
-			System.out.println(key);
+			System.out.println("Ha seleccionado la opcion " + key);
 			
 			switch (key) {
 			case "1":
@@ -119,17 +119,17 @@ public class Menu {
 			case "5":
 				String n_ingr = pedir_valor("Nombre del ingrediente");
 				
-				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas_c_ingrdiente(n_ingr);
+				Controlador.Controlador_recetas.get_recetas_tag().imprimir_recetas_c_ingrdiente(n_ingr);
 				break;
 			case "6":
 				String n_receta_b = pedir_valor("Nombre de la receta");
 				
-				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas_c_nombre(n_receta_b);
+				Controlador.Controlador_recetas.get_recetas_tag().imprimir_recetas_c_nombre(n_receta_b);
 				break;
 			case "7":
 				String n_tag = pedir_valor("Nombre del tag a buscar");
 				
-				Controlador.Controlador_recetas.get_recetas_pasos().imprimir_recetas_c_tags(n_tag);
+				Controlador.Controlador_recetas.get_recetas_tag().imprimir_recetas_c_tags(n_tag);
 				break;
 			case "8":
 				System.out.println("Regresando al menu principal ...");
