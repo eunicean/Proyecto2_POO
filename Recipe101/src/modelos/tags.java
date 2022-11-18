@@ -17,7 +17,7 @@ public class tags {
 	
 	//metodos
 	public void imprimir() {
-		System.out.println("* | " + this.nombre_tag + " | ");
+		System.out.println("* | " + this.nombre_tag );
 	}
 	
 	public String imprimir_p_query() {

@@ -34,7 +34,7 @@ public class Menu {
 				}
 				
 				else {
-					System.out.println("Su usuario o contrasena so incorrectos");
+					System.out.println("Su usuario o contrasena son incorrectos");
 				}
 				break;
 			case "2":
@@ -134,7 +134,7 @@ public class Menu {
 			case "8":
 				System.out.println("Regresando al menu principal ...");
 				m2 = false;
-				break;
+				return;
 
 			default:
 				break;
